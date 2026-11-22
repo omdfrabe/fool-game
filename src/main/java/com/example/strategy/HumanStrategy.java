@@ -5,21 +5,26 @@ import java.util.Scanner;
 import com.example.model.Card;
 import com.example.model.Deck;
 import com.example.model.Hand;
+import com.example.model.Table;
 
 public class HumanStrategy implements PlayerStrategy {
     private final Scanner scanner = new Scanner(System.in);
 
     @Override
-    public int chooseAttackCard(Hand hand, Card trumpCard, Deck deck) {
+    public int chooseAttackCard(Hand hand, Card trumpCard, Deck deck, Table table) {
         while (true) {
             System.out.printf(
-            "Trump of current game: %s. There are %d cards left in the deck." +
+            "%s" +
+            "\nTrump of current game: %s. There are %d cards left in the deck." +
             "\n%s." +
-            "\nEnter card you want to play: ",
-            trumpCard.getCard(), deck.getSize(), hand 
+            "\nEnter card you want to play (if you ended your attack type \"P\"): ",
+            table.getTable(), trumpCard.getCard(), deck.getSize(), hand 
         );
             if (!scanner.hasNextInt()) {
-                scanner.next();
+                String index = scanner.next();
+                if (index.equalsIgnoreCase("p")) {
+                    return -1;
+                }
                 continue;
             }
             int index = scanner.nextInt() - 1;
@@ -30,14 +35,15 @@ public class HumanStrategy implements PlayerStrategy {
     }
 
     @Override
-    public int chooseDefenseCard(Hand hand, Card attackCard, Card trumpCard, Deck deck) {
+    public int chooseDefenseCard(Hand hand, Card attackCard, Card trumpCard, Deck deck, Table table) {
         while (true) {
             System.out.printf(
-                "Opponent played with %s." +
+                "You have to beat this card(s):" +
+                "\n%s" +
                 "\nTrump of current game: %s. There are %d cards left in the deck." +
                 "\n%s." +
                 "\nEnter card you will defend (if impossible type \"T\"): ",
-                attackCard, trumpCard.getCard(), deck.getSize(), hand 
+                table.getTable(), trumpCard.getCard(), deck.getSize(), hand 
             );
             if (!scanner.hasNextInt()) {
                 String index = scanner.next();

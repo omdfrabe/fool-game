@@ -12,7 +12,11 @@ public class Hand {
         if (!hand.isEmpty()) {
            StringBuilder handList = new StringBuilder();
             for(int i = 0; i < hand.size(); i++) {
-                handList.append((i + 1) + ".").append("[").append(hand.get(i)).append(i + 1 != hand.size() ? "], " : "]"); 
+                handList
+                .append((i + 1) + ".")
+                .append("[")
+                .append(hand.get(i))
+                .append(i + 1 != hand.size() ? "], " : "]"); 
             }
             return handList.toString(); 
         }

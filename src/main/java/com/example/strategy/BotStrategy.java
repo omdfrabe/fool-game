@@ -7,18 +7,19 @@ import java.util.Random;
 import com.example.model.Card;
 import com.example.model.Deck;
 import com.example.model.Hand;
+import com.example.model.Table;
 
 
 public class BotStrategy implements PlayerStrategy {
     private final Random random = new Random();
 
     @Override
-    public int chooseAttackCard(Hand hand, Card trumpCard, Deck deck) {
+    public int chooseAttackCard(Hand hand, Card trumpCard, Deck deck, Table table) {
         return random.nextInt(hand.getSize());
     }
 
     @Override
-    public int chooseDefenseCard(Hand hand, Card attackCard, Card trumpCard, Deck deck) {
+    public int chooseDefenseCard(Hand hand, Card attackCard, Card trumpCard, Deck deck, Table table) {
         List<Card>choicePool = new ArrayList<>();
         List<Card>choiceTrumpPool = new ArrayList<>();
 

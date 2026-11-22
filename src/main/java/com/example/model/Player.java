@@ -2,6 +2,8 @@ package com.example.model;
 
 import com.example.strategy.PlayerStrategy;
 
+import java.util.List;
+
 public class Player {
     private String name;
     private Hand hand;
@@ -25,6 +27,12 @@ public class Player {
         hand.addCard(card);
     }
 
+    public void takeCards(List<Card> tableCards) {
+        for (Card card : tableCards) {
+            hand.addCard(card);
+        }
+    }
+
     public Card playCard(int index) {
         return hand.removeCard(index);
     }
@@ -36,13 +44,13 @@ public class Player {
         return null;
     }
 
-    public Card attack(Card trumpCard, Deck deck) {
-        int index = strategy.chooseAttackCard(hand, trumpCard, deck);
-        return playCard(index);
+    public Card attack(Card trumpCard, Deck deck, Table table) {
+        int index = strategy.chooseAttackCard(hand, trumpCard, deck, table);
+        return index == -1 ? null : peekCard(index);
     }
 
-    public Card defend(Card attackCard, Card trumpCard, Deck deck) {
-        int index = strategy.chooseDefenseCard(hand, attackCard, trumpCard, deck);
+    public Card defend(Card attackCard, Card trumpCard, Deck deck, Table table) {
+        int index = strategy.chooseDefenseCard(hand, attackCard, trumpCard, deck, table);
         return index == -1 ? null : peekCard(index);
     }
 

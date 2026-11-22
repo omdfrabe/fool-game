@@ -11,8 +11,9 @@ import com.example.strategy.*;
 public class Main {
     static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
-        Player player1 = new Player("Sashka", new HumanStrategy());
-        Player player2 = new Player("BOT", new BotStrategy());
+        Player player1 = new Player("123", new HumanStrategy());
+        Player player2 = new Player("BOT", new HumanStrategy());
+
 
         List<Player>players = new ArrayList<>();
         players.add(player1);
