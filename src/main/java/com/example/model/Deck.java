@@ -11,12 +11,10 @@ public class Deck {
 
     public void generateDeck() {
         int[] ranks = IntStream.rangeClosed(6, 14).toArray(); 
-        char[] suits = {'S', 'H', 'D', 'C'};
 
-        for (int s = 0; s < suits.length; s++) {
+        for (Suit suit : Suit.values()) {
             for (int r = 0; r < ranks.length; r++) {
-                Card card = new Card(ranks[r], suits[s]);
-                deck.add(card);
+                deck.add(new Card(ranks[r], suit));
             }
         }
     }
@@ -35,7 +33,7 @@ public class Deck {
     public Card drawTrump() {
         Card trumpCard = deck.remove(0);
         deck.add(trumpCard);
-        return trumpCard.getCard();
+        return trumpCard;
     }
 
     public int getSize() {

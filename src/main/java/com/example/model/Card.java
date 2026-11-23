@@ -1,24 +1,18 @@
 package com.example.model;
 
 public class Card {
-    private char suit;
-    private int rank;
+    private final String RESET = "\u001B[0m";
 
-    public Card(int rank, char suit) {
+    private final Suit suit;
+    private final int rank;
+
+    public Card(int rank, Suit suit) {
         this.rank = rank;
         this.suit = suit;
     }
 
     @Override 
     public String toString() {
-        String suitNames = switch (suit) {
-            case 'S' -> "♠";
-            case 'H' -> "♥";
-            case 'D' -> "♦";
-            case 'C' -> "♣";
-
-            default -> "Invalid";
-        };
         String rankNames = switch(rank) {
             case 14 -> "A";
             case 13 -> "K";
@@ -27,14 +21,10 @@ public class Card {
 
             default -> String.valueOf(rank);
         };
-        return rankNames + suitNames; 
+        return suit.getColor() + rankNames + suit.getSymbol() + RESET; 
     }
 
-    public Card getCard() {
-        return this;
-    }
-
-    public char getSuit() {
+    public Suit getSuit() {
         return this.suit;
     }
 
