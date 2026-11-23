@@ -12,12 +12,14 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
         Player player1 = new Player("123", new HumanStrategy());
-        Player player2 = new Player("BOT", new HumanStrategy());
+        Player player2 = new Player("BOT", new BotStrategy());
+        Player player3 = new Player("John", new BotStrategy());
 
 
         List<Player>players = new ArrayList<>();
         players.add(player1);
         players.add(player2);
+        players.add(player3);
 
         Game game = new Game(players);
         game.startGame();

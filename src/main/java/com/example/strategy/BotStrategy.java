@@ -15,13 +15,31 @@ public class BotStrategy implements PlayerStrategy {
 
     @Override
     public int chooseAttackCard(Hand hand, Card trumpCard, Deck deck, Table table) {
-        return random.nextInt(hand.getSize());
+        thinkingEmilation();
+        if (table.getSize() == 0) {
+            return random.nextInt(hand.getSize());
+        }
+
+        List<Card>attackPool = new ArrayList<>();
+        if (table.getSize() != 0) {
+                for (Card card : hand.getCards()) {
+                    if (table.getRanks().contains(card.getRank())) {
+                        attackPool.add(card);
+                    }
+                }
+        }
+        if (attackPool.isEmpty() && table.getSize() > 0) {
+            return -1;
+        }
+        return hand.getCards().indexOf(attackPool.get(random.nextInt(attackPool.size())));
     }
 
     @Override
     public int chooseDefenseCard(Hand hand, Card attackCard, Card trumpCard, Deck deck, Table table) {
         List<Card>choicePool = new ArrayList<>();
         List<Card>choiceTrumpPool = new ArrayList<>();
+
+        thinkingEmilation();
 
         for (Card card : hand.getCards()) {
             if (attackCard.getSuit() == trumpCard.getSuit()) {
@@ -55,5 +73,15 @@ public class BotStrategy implements PlayerStrategy {
         }
         Card chosenTrumpCard = choiceTrumpPool.get(random.nextInt(choiceTrumpPool.size()));
         return hand.getCards().indexOf(chosenTrumpCard);
+    }
+
+    public void thinkingEmilation() {
+        try {
+            int time = 800 + random.nextInt(1400);
+            Thread.sleep(time);
+        }
+        catch (InterruptedException exception){
+            Thread.currentThread().interrupt();
+        }
     }
 }

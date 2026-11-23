@@ -15,10 +15,10 @@ public class HumanStrategy implements PlayerStrategy {
         while (true) {
             System.out.printf(
             "%s" +
-            "\nTrump of current game: %s. There are %d cards left in the deck." +
+            "\nTrump of current game: %s. There are %d cards left in the deck. (The last is %s.)" +
             "\n%s." +
             "\nEnter card you want to play (if you ended your attack type \"P\"): ",
-            table.getTable(), trumpCard.getCard(), deck.getSize(), hand 
+            table.getTable(), trumpCard.getSuit(), deck.getSize(), trumpCard, hand 
         );
             if (!scanner.hasNextInt()) {
                 String index = scanner.next();
@@ -40,10 +40,10 @@ public class HumanStrategy implements PlayerStrategy {
             System.out.printf(
                 "You have to beat this card(s):" +
                 "\n%s" +
-                "\nTrump of current game: %s. There are %d cards left in the deck." +
+                "\nTrump of current game: %s. There are %d cards left in the deck. (The last is %s.)"  +
                 "\n%s." +
                 "\nEnter card you will defend (if impossible type \"T\"): ",
-                table.getTable(), trumpCard.getCard(), deck.getSize(), hand 
+                table.getTable(), trumpCard.getSuit(), deck.getSize(), trumpCard, hand 
             );
             if (!scanner.hasNextInt()) {
                 String index = scanner.next();

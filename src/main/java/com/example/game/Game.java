@@ -74,22 +74,34 @@ public class Game {
         List<Player>throwers = getThrowers();
         final int maxCards = Math.min(table.MAX_CARDS, defender.getHand().getSize());
 
+        System.out.printf("%s begins round!\n", attacker.getName());
         while (true) {
             int passedInRow = 0;
             int indexThrowers = 0;
+            Player lastPlayed = null;
             while (passedInRow < throwers.size() && table.getSize() < maxCards) {
-                if (throwers.get(indexThrowers).getHand().getSize() == 0) {
+                Player currentThrower = throwers.get(indexThrowers);
+                if (currentThrower.getHand().getSize() == 0) {
+                    checkWinner();
+                    System.out.printf("%s has no cards, he passed!\n", currentThrower.getName());    
                     passedInRow++;
                     indexThrowers = (indexThrowers + 1) % throwers.size();
                     continue;
                 }
-                System.out.printf("%s's turn!\n", attacker.getName());
-                Card attackCard = requestAttackCard(throwers.get(indexThrowers), defender, table.getSize() > 0);
+                if (currentThrower != lastPlayed) {
+                  System.out.printf("%s's turn!\n", currentThrower.getName());
+                  lastPlayed = currentThrower;   
+                }
+                Card attackCard = requestAttackCard(currentThrower, defender, table.getSize() > 0);
                 if (attackCard == null) {
+                    System.out.printf("%s's passed!\n", currentThrower.getName());
                     passedInRow++;
                     indexThrowers = (indexThrowers + 1) % throwers.size();
                 }
                 else {
+                    if (checkWinner()) {
+                        return;
+                    }
                     passedInRow = 0;
                 }
             }
@@ -100,6 +112,9 @@ public class Game {
                 if (!requestDefenseCard(defender, table.getFirstCard())) {
                     isDefending = false;
                     break;
+                }
+                if (checkWinner()) {
+                    return;
                 }
             }
             if (!isDefending) {
@@ -150,7 +165,7 @@ public class Game {
         return false;
     }
 
-    private void checkWinner() {
+    private boolean checkWinner() {
         if (deck.getSize() == 0) {
             for (Player player : players) {
                 if (!player.hasCards()) {
@@ -159,6 +174,7 @@ public class Game {
                 }
             }
         }
+        return winner != null;
     }
 
     private List<Player> getThrowers() {
@@ -169,7 +185,6 @@ public class Game {
                 throwers.add(players.get(index));
             }
         }
-
         return throwers;
     }
 
@@ -187,6 +202,7 @@ public class Game {
                 attacker.playCard(attacker.getHand().getCards().indexOf(attackCard));
                 table.addAttackCard(attackCard);
                 System.out.printf("%s attacks %s with %s.\n",attacker.getName(), defender.getName(), attackCard);
+                checkWinner();
                 return attackCard;
             }
             System.out.println("You can only attack with rank already on the table!");
@@ -203,6 +219,7 @@ public class Game {
                 defender.playCard(defender.getHand().getCards().indexOf(defenseCard));
                 table.addDefenseCard(attackCard, defenseCard);
                 System.out.printf("%s defends %s with %s.\n", defender.getName(), attackCard, defenseCard);
+                checkWinner();
                 return true;
             }
             System.out.println("The card can not beat attacker card!");
