@@ -23,6 +23,10 @@ public class Player {
         return this.hand;
     }
 
+    public PlayerStrategy getStrategy() {
+        return this.strategy;
+    }
+
     public void takeCard(Card card) {
         hand.addCard(card);
     }

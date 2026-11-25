@@ -3,11 +3,13 @@ package com.example.game;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 
 import com.example.model.*;
 
 public class Game {
     private final Random random = new Random();
+    private final Consumer<String>broadcaster;
 
     private List<Player>players;
     private Table table;
@@ -16,8 +18,9 @@ public class Game {
     private int attackerIndex, defenderIndex;
     private Player winner;   
 
-    public Game(List<Player>players) {
+    public Game(List<Player>players, Consumer<String>broadcaster) {
         this.players = new ArrayList<>(players);
+        this.broadcaster = broadcaster;
         this.deck = new Deck();
         this.table = new Table();
     }  
@@ -50,7 +53,7 @@ public class Game {
         while (winner == null) {
             playRound();
         }
-        System.out.printf("Winner is %s!\n", winner.getName());
+        broadcaster.accept(String.format("Winner is %s!\n", winner.getName()));
     }
 
     private void prepareGame() {
@@ -74,7 +77,7 @@ public class Game {
         List<Player>throwers = getThrowers();
         final int maxCards = Math.min(table.MAX_CARDS, defender.getHand().getSize());
 
-        System.out.printf("%s begins round!\n", attacker.getName());
+        broadcaster.accept(String.format("%s begins round!\n", attacker.getName()));
         while (true) {
             int passedInRow = 0;
             int indexThrowers = 0;
@@ -83,18 +86,18 @@ public class Game {
                 Player currentThrower = throwers.get(indexThrowers);
                 if (currentThrower.getHand().getSize() == 0) {
                     checkWinner();
-                    System.out.printf("%s has no cards, he passed!\n", currentThrower.getName());    
+                    broadcaster.accept(String.format("%s has no cards, he passed!\n", currentThrower.getName()));    
                     passedInRow++;
                     indexThrowers = (indexThrowers + 1) % throwers.size();
                     continue;
                 }
-                if (currentThrower != lastPlayed) {
-                  System.out.printf("%s's turn!\n", currentThrower.getName());
+                if (currentThrower != lastPlayed && currentThrower != attacker) {
+                  broadcaster.accept(String.format("%s's turn!\n", currentThrower.getName()));
                   lastPlayed = currentThrower;   
                 }
                 Card attackCard = requestAttackCard(currentThrower, defender, table.getSize() > 0);
                 if (attackCard == null) {
-                    System.out.printf("%s's passed!\n", currentThrower.getName());
+                    broadcaster.accept(String.format("%s passed!\n", currentThrower.getName()));
                     passedInRow++;
                     indexThrowers = (indexThrowers + 1) % throwers.size();
                 }
@@ -122,11 +125,11 @@ public class Game {
             }    
         }
         if (!isDefending) {
-                System.out.printf("%s takes cards.\n", defender.getName());
+                broadcaster.accept(String.format("%s takes" + (table.getSize() > 1 ? " cards" :  " card") + ".\n", defender.getName()));
                 defender.takeCards(table.takeCards());
         }
         else {
-            System.out.println("Beated!");
+            broadcaster.accept("Beated!");
             table.clearTable();
         }      
         if (deck.getSize() > 0) {
@@ -140,9 +143,14 @@ public class Game {
     private void refilHands() {
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get((attackerIndex + i) % players.size());
+            int cardTakeQuantity = 0;
             while (player.getHand().getCards().size() < 6 && deck.getSize() > 0) {
                 player.takeCard(deck.dealCard());
+                cardTakeQuantity++;
             }
+            if (cardTakeQuantity > 0) {
+                broadcaster.accept(String.format("%s took %d" + (cardTakeQuantity > 1 ? " cards" : " card") + ".\n", player.getName(), cardTakeQuantity));
+            } 
         }
     }
 
@@ -195,17 +203,17 @@ public class Game {
                 if (allowPass) {
                     return null;
                 }
-                System.out.println("You can not pass on first turn!");
+                broadcaster.accept("You can not pass on first turn!");
                 continue;
             }
             if (canAttack(attackCard)) {
                 attacker.playCard(attacker.getHand().getCards().indexOf(attackCard));
                 table.addAttackCard(attackCard);
-                System.out.printf("%s attacks %s with %s.\n",attacker.getName(), defender.getName(), attackCard);
+                broadcaster.accept(String.format("%s attacks %s with %s.\n",attacker.getName(), defender.getName(), attackCard));
                 checkWinner();
                 return attackCard;
             }
-            System.out.println("You can only attack with rank already on the table!");
+            broadcaster.accept("You can only attack with rank already on the table!");
         }
     }
     
@@ -218,11 +226,11 @@ public class Game {
             if (canBeat(attackCard, defenseCard)) {
                 defender.playCard(defender.getHand().getCards().indexOf(defenseCard));
                 table.addDefenseCard(attackCard, defenseCard);
-                System.out.printf("%s defends %s with %s.\n", defender.getName(), attackCard, defenseCard);
+                broadcaster.accept(String.format("%s defends %s with %s.\n", defender.getName(), attackCard, defenseCard));
                 checkWinner();
                 return true;
             }
-            System.out.println("The card can not beat attacker card!");
+            broadcaster.accept("The card can not beat attacker card!");
         }    
     }
 }
